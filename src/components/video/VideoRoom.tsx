@@ -8,6 +8,7 @@ import {
   useParticipantIds,
   useDailyEvent,
   DailyVideo,
+  DailyAudio,
   useVideoTrack,
   useAudioTrack,
 } from '@daily-co/daily-react';
@@ -40,6 +41,8 @@ function destroyCallObject() {
 
 function VideoTile({ participantId, isLocal }: { participantId: string; isLocal?: boolean }) {
   const videoTrack = useVideoTrack(participantId);
+  const audioTrack = useAudioTrack(participantId);
+  const isAudioOff = !audioTrack?.state || audioTrack.state === 'off';
 
   return (
     <div className={`relative rounded-lg overflow-hidden bg-charcoal ${isLocal ? 'w-32 h-24 shadow-lg border-2 border-white/20' : 'w-full h-full'}`}>
@@ -56,6 +59,15 @@ function VideoTile({ participantId, isLocal }: { participantId: string; isLocal?
           </div>
         </div>
       ) : null}
+      {/* Audio indicator */}
+      {isAudioOff && (
+        <div className={`absolute ${isLocal ? 'top-1 right-1' : 'top-2 right-2'} p-1 bg-red-500/80 rounded-full`}>
+          <svg className={`${isLocal ? 'w-3 h-3' : 'w-4 h-4'} text-white`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+        </div>
+      )}
       {isLocal && (
         <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black/60 rounded text-[10px] text-white">
           You
@@ -67,20 +79,21 @@ function VideoTile({ participantId, isLocal }: { participantId: string; isLocal?
 
 function Controls({ onLeave }: { onLeave?: () => void }) {
   const daily = useDaily();
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
+  const localParticipant = useLocalParticipant();
+
+  // Get actual track states from the participant
+  const isMuted = !localParticipant?.tracks?.audio?.state || localParticipant?.tracks?.audio?.state === 'off';
+  const isVideoOff = !localParticipant?.tracks?.video?.state || localParticipant?.tracks?.video?.state === 'off';
 
   const toggleAudio = useCallback(() => {
     if (daily) {
-      daily.setLocalAudio(isMuted);
-      setIsMuted(!isMuted);
+      daily.setLocalAudio(isMuted); // If muted, unmute (pass true), if unmuted, mute (pass false)
     }
   }, [daily, isMuted]);
 
   const toggleVideo = useCallback(() => {
     if (daily) {
-      daily.setLocalVideo(isVideoOff);
-      setIsVideoOff(!isVideoOff);
+      daily.setLocalVideo(isVideoOff); // If off, turn on (pass true), if on, turn off (pass false)
     }
   }, [daily, isVideoOff]);
 
@@ -162,7 +175,11 @@ function CallUI({ userName, onLeave }: { userName: string; onLeave?: () => void 
 
   useEffect(() => {
     if (daily && !joined) {
-      daily.join({ userName }).catch((err) => {
+      daily.join({
+        userName,
+        startVideoOff: false,
+        startAudioOff: false,
+      }).catch((err) => {
         setError(err.message || 'Failed to join meeting');
       });
     }
@@ -190,6 +207,9 @@ function CallUI({ userName, onLeave }: { userName: string; onLeave?: () => void 
 
   return (
     <div className="relative w-full h-full bg-charcoal overflow-hidden">
+      {/* Audio for all participants - this enables receiving remote audio */}
+      <DailyAudio />
+
       {/* Main Video Area */}
       <div className="absolute inset-0">
         {remoteParticipantIds.length > 0 ? (
