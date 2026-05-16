@@ -19,6 +19,7 @@ interface VideoRoomProps {
   roomUrl: string;
   userName: string;
   onLeave?: () => void;
+  isHost?: boolean;
 }
 
 // Module-level singleton to prevent duplicate instances
@@ -77,7 +78,7 @@ function VideoTile({ participantId, isLocal }: { participantId: string; isLocal?
   );
 }
 
-function Controls({ onLeave }: { onLeave?: () => void }) {
+function Controls({ onLeave, isHost, onToggleSettings }: { onLeave?: () => void; isHost?: boolean; onToggleSettings?: () => void }) {
   const daily = useDaily();
   const localParticipant = useLocalParticipant();
 
@@ -87,13 +88,13 @@ function Controls({ onLeave }: { onLeave?: () => void }) {
 
   const toggleAudio = useCallback(() => {
     if (daily) {
-      daily.setLocalAudio(isMuted); // If muted, unmute (pass true), if unmuted, mute (pass false)
+      daily.setLocalAudio(isMuted);
     }
   }, [daily, isMuted]);
 
   const toggleVideo = useCallback(() => {
     if (daily) {
-      daily.setLocalVideo(isVideoOff); // If off, turn on (pass true), if on, turn off (pass false)
+      daily.setLocalVideo(isVideoOff);
     }
   }, [daily, isVideoOff]);
 
@@ -145,6 +146,20 @@ function Controls({ onLeave }: { onLeave?: () => void }) {
         )}
       </button>
 
+      {/* Host Settings Button */}
+      {isHost && (
+        <button
+          onClick={onToggleSettings}
+          className="w-11 h-11 rounded-full flex items-center justify-center transition-colors bg-white/20 text-white hover:bg-white/30"
+          title="Audio Settings"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      )}
+
       <button
         onClick={handleLeave}
         className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
@@ -158,12 +173,184 @@ function Controls({ onLeave }: { onLeave?: () => void }) {
   );
 }
 
-function CallUI({ userName, onLeave }: { userName: string; onLeave?: () => void }) {
+// Host control panel for managing audio settings
+function HostControlPanel({ onClose }: { onClose: () => void }) {
+  const daily = useDaily();
+  const remoteParticipantIds = useParticipantIds({ filter: 'remote' });
+  const [volume, setVolume] = useState(100);
+  const [participantVolumes, setParticipantVolumes] = useState<Record<string, number>>({});
+
+  // Update remote audio volume
+  const handleVolumeChange = useCallback((newVolume: number) => {
+    setVolume(newVolume);
+    // Apply volume to all audio elements
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach((audio) => {
+      audio.volume = newVolume / 100;
+    });
+  }, []);
+
+  // Mute/unmute a specific participant (locally - stops receiving their audio)
+  const toggleParticipantAudio = useCallback((participantId: string, currentlyReceiving: boolean) => {
+    if (daily) {
+      daily.updateParticipant(participantId, {
+        setSubscribedTracks: {
+          audio: !currentlyReceiving,
+          video: true,
+        },
+      });
+    }
+  }, [daily]);
+
+  // Mute all participants locally
+  const muteAllParticipants = useCallback(() => {
+    if (daily) {
+      remoteParticipantIds.forEach((id) => {
+        daily.updateParticipant(id, {
+          setSubscribedTracks: {
+            audio: false,
+            video: true,
+          },
+        });
+      });
+    }
+  }, [daily, remoteParticipantIds]);
+
+  // Unmute all participants locally
+  const unmuteAllParticipants = useCallback(() => {
+    if (daily) {
+      remoteParticipantIds.forEach((id) => {
+        daily.updateParticipant(id, {
+          setSubscribedTracks: {
+            audio: true,
+            video: true,
+          },
+        });
+      });
+    }
+  }, [daily, remoteParticipantIds]);
+
+  return (
+    <div className="absolute top-4 right-4 z-20 bg-black/80 backdrop-blur-md rounded-xl p-4 min-w-[280px] text-white shadow-2xl">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-sm">Host Controls</h3>
+        <button
+          onClick={onClose}
+          className="p-1 hover:bg-white/20 rounded-full transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Master Volume */}
+      <div className="mb-4">
+        <label className="text-xs text-white/70 mb-2 block">Master Volume</label>
+        <div className="flex items-center gap-3">
+          <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={(e) => handleVolumeChange(Number(e.target.value))}
+            className="flex-1 h-2 bg-white/20 rounded-full appearance-none cursor-pointer accent-sage"
+          />
+          <span className="text-xs w-8 text-right">{volume}%</span>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={muteAllParticipants}
+          className="flex-1 px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-medium transition-colors"
+        >
+          Mute All
+        </button>
+        <button
+          onClick={unmuteAllParticipants}
+          className="flex-1 px-3 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg text-xs font-medium transition-colors"
+        >
+          Unmute All
+        </button>
+      </div>
+
+      {/* Participant List */}
+      {remoteParticipantIds.length > 0 && (
+        <div>
+          <label className="text-xs text-white/70 mb-2 block">Participants</label>
+          <div className="space-y-2 max-h-32 overflow-y-auto">
+            {remoteParticipantIds.map((id) => (
+              <ParticipantAudioControl key={id} participantId={id} onToggle={toggleParticipantAudio} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {remoteParticipantIds.length === 0 && (
+        <p className="text-xs text-white/50 text-center py-2">No participants yet</p>
+      )}
+    </div>
+  );
+}
+
+// Individual participant audio control
+function ParticipantAudioControl({
+  participantId,
+  onToggle
+}: {
+  participantId: string;
+  onToggle: (id: string, receiving: boolean) => void;
+}) {
+  const daily = useDaily();
+  const audioTrack = useAudioTrack(participantId);
+  const participants = daily?.participants();
+  const participant = participants?.[participantId];
+  const isReceivingAudio = audioTrack?.subscribed !== false;
+
+  return (
+    <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+          <span className="text-xs">👤</span>
+        </div>
+        <span className="text-xs truncate max-w-[120px]">
+          {participant?.user_name || 'Participant'}
+        </span>
+      </div>
+      <button
+        onClick={() => onToggle(participantId, isReceivingAudio)}
+        className={`p-1.5 rounded-full transition-colors ${
+          isReceivingAudio ? 'bg-green-500/30 text-green-400' : 'bg-red-500/30 text-red-400'
+        }`}
+        title={isReceivingAudio ? 'Mute participant' : 'Unmute participant'}
+      >
+        {isReceivingAudio ? (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+        ) : (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+        )}
+      </button>
+    </div>
+  );
+}
+
+function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () => void; isHost?: boolean }) {
   const daily = useDaily();
   const localParticipant = useLocalParticipant();
   const remoteParticipantIds = useParticipantIds({ filter: 'remote' });
   const [joined, setJoined] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   useDailyEvent('joined-meeting', () => {
     setJoined(true);
@@ -210,6 +397,11 @@ function CallUI({ userName, onLeave }: { userName: string; onLeave?: () => void 
       {/* Audio for all participants - this enables receiving remote audio */}
       <DailyAudio />
 
+      {/* Host Control Panel */}
+      {isHost && showSettings && (
+        <HostControlPanel onClose={() => setShowSettings(false)} />
+      )}
+
       {/* Main Video Area */}
       <div className="absolute inset-0">
         {remoteParticipantIds.length > 0 ? (
@@ -240,13 +432,17 @@ function CallUI({ userName, onLeave }: { userName: string; onLeave?: () => void 
 
       {/* Controls - Overlaid on video */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
-        <Controls onLeave={onLeave} />
+        <Controls
+          onLeave={onLeave}
+          isHost={isHost}
+          onToggleSettings={() => setShowSettings(!showSettings)}
+        />
       </div>
     </div>
   );
 }
 
-export function VideoRoom({ roomUrl, userName, onLeave }: VideoRoomProps) {
+export function VideoRoom({ roomUrl, userName, onLeave, isHost = false }: VideoRoomProps) {
   const [callObject, setCallObject] = useState<DailyCall | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -277,7 +473,7 @@ export function VideoRoom({ roomUrl, userName, onLeave }: VideoRoomProps) {
 
   return (
     <DailyProvider callObject={callObject}>
-      <CallUI userName={userName} onLeave={onLeave} />
+      <CallUI userName={userName} onLeave={onLeave} isHost={isHost} />
     </DailyProvider>
   );
 }
