@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mama & Papa | Dynamic Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f9f7f2;
+      --card-bg: rgba(255, 255, 255, 0.7);
+      --text-primary: #3c3c3c;
+      --text-secondary: #6b6b6b;
+      --accent-green: #8b9d83;
+      --border-color: rgba(229, 224, 216, 0.6);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+      --font-serif: 'Lora', serif;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .aurora-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      background: linear-gradient(135deg, #f9f7f2 0%, #e8ede4 25%, #f9f7f2 50%, #f2e6e1 75%, #f9f7f2 100%);
+      background-size: 400% 400%;
+      animation: aurora-flow 15s ease infinite;
+    }
+
+    @keyframes aurora-flow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .blur-fade-in {
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(20px);
+      animation: blurFade 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    .delay-1 { animation-delay: 0.2s; }
+    .delay-2 { animation-delay: 0.4s; }
+    .delay-3 { animation-delay: 0.6s; }
+
+    @keyframes blurFade {
+      to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    .wobble-card-container {
+      perspective: 1000px;
+      margin-bottom: 4rem;
+    }
+
+    .wobble-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 3rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease-out;
+    }
+
+    .wobble-card:hover { transform: rotateX(2deg) rotateY(-2deg) scale3d(1.01, 1.01, 1.01); }
+
+    .wobble-card h2 {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      transform: translateZ(30px);
+    }
+
+    .wobble-card > p {
+      transform: translateZ(20px);
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      transform: translateZ(10px);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      background-color: rgba(255, 255, 255, 0.9);
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px rgba(139, 157, 131, 0.1);
+    }
+
+    button {
+      background-color: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      transform: translateZ(15px);
+    }
+
+    button:hover {
+      background-color: #7a8c72;
+      transform: translateZ(25px) scale(1.02);
+    }
+
+    .info-box {
+      margin-top: 3rem;
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(139, 157, 131, 0.2);
+      position: relative;
+      overflow: hidden;
+      transform: translateZ(10px);
+    }
+
+    .info-box::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-image:
+        linear-gradient(rgba(139, 157, 131, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 157, 131, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: -1;
+      animation: gridMove 20s linear infinite;
+      opacity: 0.5;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translateY(0) translateX(0); }
+      100% { transform: translateY(-40px) translateX(-40px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora-bg"></div>
+
+  <div class="container">
+    <header class="hero blur-fade-in delay-1">
+      <h1>Mama & Papa</h1>
+      <p>A quiet place to be heard, encouraged, and prayed for by those who have walked the path before you.</p>
+    </header>
+
+    <main class="wobble-card-container blur-fade-in delay-2">
+      <div class="wobble-card">
+        <h2>Request a Session</h2>
+        <p>This is a referral-based space. If you know someone carrying a heavy weight, you can request a session on their behalf.</p>
+
+        <form action="#">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" placeholder="Who is referring this person?">
+          </div>
+          <div class="form-group">
+            <label>Their First Name</label>
+            <input type="text" placeholder="Who should we pray with?">
+          </div>
+          <button type="button">Send Invitation Request</button>
+        </form>
+
+        <div class="info-box">
+          <p><strong>How it works:</strong> Once you submit, Mama and Papa will start praying immediately. We'll send you an access code to forward to them personally.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

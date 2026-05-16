@@ -1,65 +1,139 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { Container } from '@/components/layout/Container';
+import { Button } from '@/components/ui/Button';
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="py-16 md:py-24">
+          <Container>
+            <h1 className="text-4xl md:text-5xl font-semibold text-charcoal leading-tight mb-6">
+              A listening ear, a word of encouragement, and a prayer.
+            </h1>
+            <p className="text-xl text-warm-gray leading-relaxed mb-10 max-w-xl">
+              Connecting hurting people with Mama and Papa — two ministers who have spent
+              over 40 years listening, encouraging, and praying with people through hard seasons.
+            </p>
+            <Link href="/request">
+              <Button>Request a session for someone</Button>
+            </Link>
+          </Container>
+        </section>
+
+        {/* Who This Is For */}
+        <section className="py-16 bg-linen">
+          <Container>
+            <h2 className="text-3xl font-semibold text-charcoal mb-6">
+              Who this is for
+            </h2>
+            <p className="text-lg text-warm-gray leading-relaxed mb-4">
+              This is for people walking through hard times — single parents carrying weight alone,
+              those feeling lonely or disillusioned, anyone who could use someone to listen and pray with them.
+            </p>
+            <p className="text-lg text-warm-gray leading-relaxed">
+              These sessions are not therapy, and they are not prosperity-gospel encouragement.
+              They are conversations where someone hears what you are carrying, encourages you in the Lord,
+              and prays with you. Simple, sacred, and free.
+            </p>
+          </Container>
+        </section>
+
+        {/* How It Works */}
+        <section className="py-16">
+          <Container>
+            <h2 className="text-3xl font-semibold text-charcoal mb-10">
+              How it works
+            </h2>
+            <div className="space-y-8">
+              <div className="flex gap-6">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage text-cream flex items-center justify-center font-semibold">
+                  1
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-charcoal mb-2">
+                    You submit a request
+                  </h3>
+                  <p className="text-warm-gray leading-relaxed">
+                    Fill out a short form telling us about the person you want to refer and what they are walking through.
+                    Mama and Papa will begin praying as soon as it arrives.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage text-cream flex items-center justify-center font-semibold">
+                  2
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-charcoal mb-2">
+                    You share the booking link
+                  </h3>
+                  <p className="text-warm-gray leading-relaxed">
+                    We will send you an access code and booking link. You personally share it with the person you are caring for —
+                    a small act of love that says, &ldquo;I see you, and I want to walk with you in this.&rdquo;
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage text-cream flex items-center justify-center font-semibold">
+                  3
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-charcoal mb-2">
+                    They book a time
+                  </h3>
+                  <p className="text-warm-gray leading-relaxed">
+                    When they are ready, they enter the code and pick a time that works for them.
+                    They will meet with Mama and Papa over Zoom for a 40-minute session.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        {/* About Mama and Papa */}
+        <section className="py-16 bg-linen">
+          <Container>
+            <h2 className="text-3xl font-semibold text-charcoal mb-6">
+              About Mama and Papa
+            </h2>
+            <p className="text-lg text-warm-gray leading-relaxed mb-4">
+              Mama and Papa are ministers who have spent over 40 years pastoring, encouraging,
+              and praying for people through every season of life — grief, loneliness, family struggles,
+              faith questions, and everything in between.
+            </p>
+            <p className="text-lg text-warm-gray leading-relaxed">
+              They are not professional counselors. They are simply two people who love to listen,
+              who believe that God is close to the brokenhearted, and who would love to pray with you.
+            </p>
+          </Container>
+        </section>
+
+        {/* CTA */}
+        <section className="py-16">
+          <Container className="text-center">
+            <h2 className="text-3xl font-semibold text-charcoal mb-4">
+              Know someone who could use this?
+            </h2>
+            <p className="text-lg text-warm-gray mb-8">
+              It only takes a few minutes to submit a request.
+            </p>
+            <Link href="/request">
+              <Button>Request a session</Button>
+            </Link>
+          </Container>
+        </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

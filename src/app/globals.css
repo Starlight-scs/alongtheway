@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors - Warm palette */
+  --color-cream: #FAF8F5;
+  --color-linen: #F5F0EB;
+  --color-charcoal: #2D2A26;
+  --color-warm-gray: #6B6560;
+  --color-sage: #8B9E8B;
+  --color-sage-dark: #7A8E7A;
+  --color-dusty-rose: #C4A5A5;
+  --color-terracotta: #C9A88A;
+  --color-error: #B85C5C;
+  --color-success: #7A9A7A;
+  --color-border: #D4D0CB;
+
+  /* Fonts */
+  --font-serif: var(--font-lora), Georgia, serif;
+  --font-mono: var(--font-jetbrains), 'SF Mono', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base styles */
+html {
+  background-color: var(--color-cream);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-serif);
+  color: var(--color-charcoal);
+  line-height: 1.6;
+  font-size: 1.125rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-charcoal);
+}
+
+h1 { font-size: 2.5rem; line-height: 1.2; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--color-sage);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-sage);
+  color: white;
+}
+
+/* Access code styling */
+.access-code {
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-charcoal);
+  background: var(--color-linen);
+  padding: 1.25rem 1.75rem;
+  border-radius: 0.5rem;
+  text-align: center;
 }
