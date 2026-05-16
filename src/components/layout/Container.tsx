@@ -8,9 +8,9 @@ interface ContainerProps {
 
 export function Container({ children, className = '', size = 'default' }: ContainerProps) {
   const sizes = {
-    narrow: 'max-w-xl',
-    default: 'max-w-2xl',
-    wide: 'max-w-4xl',
+    narrow: 'max-w-3xl',
+    default: 'max-w-5xl',
+    wide: 'max-w-7xl',
   };
 
   return (

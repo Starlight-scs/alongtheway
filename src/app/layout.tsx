@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Lora, JetBrains_Mono } from "next/font/google";
+import { Bodoni_Moda_SC, JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 
-const lora = Lora({
+const display = Bodoni_Moda_SC({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-lora",
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -15,8 +22,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Prayer & Encouragement",
-  description: "Connecting hurting people with Mama and Papa for sessions of listening, encouragement, and prayer.",
+  title: "Along the Way | Mama & Papa",
+  description: "A human-centered place for encouragement, listening, prayer, and warm referrals to Mama and Papa.",
 };
 
 export default function RootLayout({
@@ -25,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lora.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${display.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen bg-cream">{children}</body>
     </html>
   );

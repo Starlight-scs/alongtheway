@@ -9,11 +9,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = '', variant = 'primary', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'px-8 py-4 text-lg font-medium rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseStyles = 'inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2 focus-visible:ring-offset-cream disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {
-      primary: 'bg-sage text-cream hover:bg-sage-dark',
-      secondary: 'bg-transparent text-sage border border-sage hover:bg-sage/10',
+      primary: 'bg-sage text-cream shadow-[0_10px_30px_rgba(88,102,80,0.28)] hover:bg-sage-dark hover:-translate-y-0.5',
+      secondary: 'bg-transparent text-charcoal border border-border hover:bg-oat',
       text: 'text-sage underline underline-offset-4 hover:text-sage-dark px-0 py-0',
     };
 
