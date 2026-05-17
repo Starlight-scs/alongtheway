@@ -51,7 +51,7 @@ export default function Home() {
       <main className="flex-1">
         <section className="px-4 pb-10 pt-2 md:px-6">
           <Container size="wide">
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-charcoal text-cream shadow-[0_30px_80px_rgba(45,36,29,0.28)]">
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-charcoal text-white shadow-[0_30px_80px_rgba(45,36,29,0.28)]">
               <video
                 className="absolute inset-0 h-full w-full object-cover"
                 autoPlay
@@ -65,14 +65,14 @@ export default function Home() {
               <div className="texture-overlay absolute inset-0 bg-[linear-gradient(120deg,rgba(26,20,16,0.75),rgba(45,36,29,0.45)_45%,rgba(26,20,16,0.76))]" />
               <div className="relative px-6 py-20 md:px-12 md:py-28 lg:px-16 lg:py-32">
                 <div className="max-w-4xl">
-                  <span className="eyebrow border-white/15 bg-white/10 text-cream/80">A quiet, human-centered invitation</span>
-                  <h1 className="mt-6 max-w-3xl text-cream">
+                  <span className="eyebrow border-white/20 bg-white/15 text-white">A quiet, human-centered invitation</span>
+                  <h1 className="mt-6 max-w-3xl text-white">
                     Along the way
                   </h1>
-                  <p className="mt-6 max-w-3xl text-lg leading-8 text-cream/88 md:text-2xl md:leading-10">
+                  <p className="mt-6 max-w-3xl text-lg leading-8 text-white md:text-2xl md:leading-10">
                     Sometimes you need people to walk with you, talk with you, and pray with you along the way.
                   </p>
-                  <p className="mt-5 max-w-2xl text-base leading-7 text-cream/72 md:text-lg">
+                  <p className="mt-5 max-w-2xl text-base leading-7 text-white/90 md:text-lg">
                     Mama and Papa offer warm, faith-filled sessions for people who need to be heard, encouraged, and covered in prayer through difficult seasons.
                   </p>
                   <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -80,7 +80,7 @@ export default function Home() {
                       <Button>Refer Someone for Prayer</Button>
                     </Link>
                     <Link href="/book">
-                      <Button variant="secondary" className="border-white/25 bg-white/8 text-cream hover:bg-white/14">
+                      <Button variant="secondary" className="border-white/25 bg-white/10 text-white hover:bg-white/20">
                         Book with an Access Code
                       </Button>
                     </Link>
@@ -140,12 +140,12 @@ export default function Home() {
                 <span className="eyebrow">How it works</span>
                 <div className="mt-8 grid gap-7 md:grid-cols-3">
                   {[
-                    ['1', 'Someone refers with care', 'A friend, family member, pastor, or loved one submits the request and shares the situation with honesty and compassion.'],
-                    ['2', 'We prepare prayerfully', 'Mama and Papa begin praying immediately and provide an access code and next step for scheduling.'],
-                    ['3', 'A session is booked', 'When they are ready, they choose a time for a private Zoom conversation centered on listening, encouragement, and prayer.'],
+                    ['1', 'Refer with care', 'A friend, family member, or loved one shares who needs prayer and what they are walking through.'],
+                    ['2', 'We pray first', 'Mama and Papa begin praying immediately and send an access code for scheduling.'],
+                    ['3', 'Connect live', 'They choose a time for a private video session centered on listening, encouragement, and prayer.'],
                   ].map(([step, title, body]) => (
                     <div key={step} className="rounded-[1.5rem] bg-oat p-6">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sage text-lg font-semibold text-cream">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sage text-lg font-semibold text-white">
                         {step}
                       </div>
                       <h3 className="mt-5 text-2xl text-charcoal">{title}</h3>
@@ -162,6 +162,40 @@ export default function Home() {
                 <p className="mt-4 text-base leading-7">
                   These sessions are not clinical counseling. They are simple, reverent conversations where someone is heard well, encouraged honestly, and prayed for with care.
                 </p>
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        <section id="why-referrals" className="px-4 py-10 md:px-6 md:py-14">
+          <Container size="wide">
+            <div className="rounded-[2.5rem] bg-charcoal px-6 py-12 text-white md:px-12 md:py-16">
+              <div className="max-w-4xl mx-auto text-center">
+                <span className="eyebrow border-white/20 bg-white/15 text-white">Walking Together</span>
+                <h2 className="mt-6 text-white">Why Referrals?</h2>
+                <p className="mt-6 text-lg leading-8 text-white md:text-xl">
+                  We believe the most important thing is to be in community. None of us can be everything for someone who is hurting — and we were never meant to be.
+                </p>
+                <p className="mt-5 text-base leading-7 text-white/90 md:text-lg">
+                  Along the way, we want and need each other to receive from people who carry the heart of the Father. When you refer someone, you are not handing them off — you are inviting more hands to hold them, more voices to encourage them, and more hearts to pray for them.
+                </p>
+                <div className="mt-10 grid gap-6 md:grid-cols-3 text-left">
+                  <div className="rounded-2xl bg-white/10 p-6">
+                    <div className="text-2xl mb-3">🤝</div>
+                    <h3 className="text-white text-lg">Community, Not Isolation</h3>
+                    <p className="mt-2 text-sm text-white/90">No one should walk through hard seasons alone. Referrals create connection.</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/10 p-6">
+                    <div className="text-2xl mb-3">💛</div>
+                    <h3 className="text-white text-lg">Shared Burden</h3>
+                    <p className="mt-2 text-sm text-white/90">You don't have to carry someone alone. Let others help you love them well.</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/10 p-6">
+                    <div className="text-2xl mb-3">🙏</div>
+                    <h3 className="text-white text-lg">Heart of the Father</h3>
+                    <p className="mt-2 text-sm text-white/90">More people praying means more of God's love surrounding those who need it most.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </Container>

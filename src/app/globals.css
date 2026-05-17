@@ -63,9 +63,10 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.05;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--color-foreground);
 }
 
@@ -77,9 +78,15 @@ a {
   transition: color 160ms ease;
 }
 
-h1 { font-size: clamp(3rem, 8vw, 6.5rem); line-height: 0.96; }
-h2 { font-size: clamp(2.25rem, 4vw, 4rem); }
-h3 { font-size: clamp(1.4rem, 2vw, 2rem); }
+h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1; }
+h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
+h3 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+
+/* Non-caps text class for body headings that shouldn't be uppercase */
+.heading-normal {
+  text-transform: none;
+  letter-spacing: -0.02em;
+}
 
 :focus-visible {
   outline: 2px solid var(--color-sage);

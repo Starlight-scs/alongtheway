@@ -7,6 +7,7 @@ export const intakeSchema = z.object({
   personFirstName: z.string().min(1, "Please enter the person's first name"),
   personEmail: z.string().email('Please enter a valid email').optional().or(z.literal('')),
   personPhone: z.string().optional(),
+  conditions: z.string().optional(),
   situation: z.string().min(10, 'Please share a bit more about what they are walking through'),
   prayerRequests: z.string().min(10, 'Please share some specific prayer requests'),
   notesForMinisters: z.string().optional(),

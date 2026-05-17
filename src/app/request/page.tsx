@@ -61,17 +61,17 @@ export default function RequestPage() {
           ) : (
             <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
               <section className="section-shell rounded-[2.5rem] px-6 py-8 md:px-8 md:py-10">
-                <span className="eyebrow">Referral intake</span>
-                <h1 className="mt-5 max-w-xl text-charcoal">Refer someone with care.</h1>
+                <span className="eyebrow">Referral</span>
+                <h1 className="mt-5 max-w-xl text-charcoal">Refer</h1>
                 <p className="mt-5 max-w-xl text-lg leading-8 text-warm-gray">
-                  Use this form to tell us who needs prayer, encouragement, and a compassionate conversation. Mama and Papa will begin praying as soon as your request comes in.
+                  Tell us who needs prayer. We will begin praying as soon as your request comes in.
                 </p>
 
                 <div className="mt-8 space-y-4">
                   {[
-                    'Share enough context for prayer, without pressure to write perfectly.',
-                    'We will send an access code and booking link for you to pass along personally.',
-                    'The conversation is warm, private, and centered on listening, encouragement, and prayer.',
+                    'Share context for prayer — no pressure to write perfectly.',
+                    'We send an access code for you to pass along personally.',
+                    'Sessions are warm, private, and centered on prayer.',
                   ].map((item) => (
                     <div key={item} className="rounded-[1.25rem] bg-oat px-5 py-4">
                       <p className="text-base leading-7 text-charcoal">{item}</p>
@@ -79,19 +79,19 @@ export default function RequestPage() {
                   ))}
                 </div>
 
-                <div className="mt-10 rounded-[1.75rem] bg-charcoal px-6 py-7 text-cream">
-                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cream/70">A note from Mama & Papa</p>
-                  <p className="mt-4 text-lg leading-8 text-cream/88">
-                    We know it can be hard to ask for help. If someone is hurting right now, this can be one quiet way to let them know someone is ready to walk with them.
+                <div className="mt-10 rounded-[1.75rem] bg-charcoal px-6 py-7">
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-white/80">From Mama & Papa</p>
+                  <p className="mt-4 text-lg leading-8 text-white">
+                    Asking for help is hard. This is one quiet way to let someone know they are not alone.
                   </p>
                 </div>
               </section>
 
               <section className="glass-panel rounded-[2.5rem] px-6 py-8 md:px-8 md:py-10">
                 <div className="mb-8">
-                  <h2 className="text-3xl text-charcoal">Book / Refer section</h2>
+                  <h2 className="text-3xl text-charcoal">Start Here</h2>
                   <p className="mt-3 max-w-2xl text-base leading-7 text-warm-gray">
-                    This form takes about three minutes. Once submitted, we will respond with the next step for scheduling.
+                    Takes about 3 minutes. We will send you the next steps.
                   </p>
                 </div>
 
