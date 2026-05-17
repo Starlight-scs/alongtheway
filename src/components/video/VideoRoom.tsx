@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import {
   DailyProvider,
   useDaily,
@@ -31,17 +31,42 @@ function getOrCreateCallObject(url: string): DailyCall {
   }
   globalCallObject = DailyIframe.createCallObject({
     url,
-    // Ensure audio and video are enabled by default
     startVideoOff: false,
     startAudioOff: false,
   });
   return globalCallObject;
 }
 
-function destroyCallObject() {
+// Properly stop all media tracks and destroy call object
+async function destroyCallObject() {
   if (globalCallObject) {
-    globalCallObject.destroy();
+    try {
+      // Turn off local video and audio first
+      globalCallObject.setLocalVideo(false);
+      globalCallObject.setLocalAudio(false);
+
+      // Leave the meeting if still connected
+      const meetingState = globalCallObject.meetingState();
+      if (meetingState === 'joined-meeting') {
+        await globalCallObject.leave();
+      }
+
+      // Destroy the call object (this should release all tracks)
+      await globalCallObject.destroy();
+    } catch (e) {
+      console.error('Error destroying call object:', e);
+    }
     globalCallObject = null;
+  }
+
+  // Extra safety: stop any remaining media tracks in the browser
+  try {
+    const streams = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }).catch(() => null);
+    if (streams) {
+      streams.getTracks().forEach(track => track.stop());
+    }
+  } catch (e) {
+    // Ignore errors - just trying to clean up
   }
 }
 
@@ -65,7 +90,6 @@ function VideoTile({ participantId, isLocal }: { participantId: string; isLocal?
           </div>
         </div>
       ) : null}
-      {/* Audio indicator */}
       {isAudioOff && (
         <div className={`absolute ${isLocal ? 'top-1 right-1' : 'top-2 right-2'} p-1 bg-red-500/80 rounded-full`}>
           <svg className={`${isLocal ? 'w-3 h-3' : 'w-4 h-4'} text-white`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,15 +113,12 @@ function Controls({ onLeave, isHost, onToggleSettings }: { onLeave?: () => void;
   const [localAudioEnabled, setLocalAudioEnabled] = useState(true);
   const [localVideoEnabled, setLocalVideoEnabled] = useState(true);
 
-  // Get actual track states from the participant - check if track is actively sending
   const audioState = localParticipant?.tracks?.audio?.state;
   const videoState = localParticipant?.tracks?.video?.state;
 
-  // Audio is muted if state is 'off' or 'blocked' or undefined
   const isMuted = !audioState || audioState === 'off' || audioState === 'blocked';
   const isVideoOff = !videoState || videoState === 'off' || videoState === 'blocked';
 
-  // Sync local state with actual track state
   useEffect(() => {
     if (audioState === 'playable' || audioState === 'sendable') {
       setLocalAudioEnabled(true);
@@ -130,15 +151,26 @@ function Controls({ onLeave, isHost, onToggleSettings }: { onLeave?: () => void;
     }
   }, [daily, localVideoEnabled]);
 
-  const handleLeave = useCallback(() => {
+  const handleLeave = useCallback(async () => {
     if (daily) {
-      daily.leave();
+      try {
+        // Turn off camera and mic
+        daily.setLocalVideo(false);
+        daily.setLocalAudio(false);
+
+        // Leave the meeting
+        await daily.leave();
+      } catch (e) {
+        console.error('Error leaving meeting:', e);
+      }
     }
-    destroyCallObject();
+
+    // Destroy the call object and clean up tracks
+    await destroyCallObject();
+
     onLeave?.();
   }, [daily, onLeave]);
 
-  // Use local state for immediate visual feedback, fall back to track state
   const showMuted = !localAudioEnabled || isMuted;
   const showVideoOff = !localVideoEnabled || isVideoOff;
 
@@ -182,7 +214,6 @@ function Controls({ onLeave, isHost, onToggleSettings }: { onLeave?: () => void;
         )}
       </button>
 
-      {/* Host Settings Button */}
       {isHost && (
         <button
           onClick={onToggleSettings}
@@ -214,57 +245,36 @@ function HostControlPanel({ onClose }: { onClose: () => void }) {
   const daily = useDaily();
   const remoteParticipantIds = useParticipantIds({ filter: 'remote' });
   const [volume, setVolume] = useState(100);
-  const [participantVolumes, setParticipantVolumes] = useState<Record<string, number>>({});
+  const [isMutedAll, setIsMutedAll] = useState(false);
+  const audioContainerRef = useRef<HTMLDivElement>(null);
 
-  // Update remote audio volume
-  const handleVolumeChange = useCallback((newVolume: number) => {
-    setVolume(newVolume);
-    // Apply volume to all audio elements
-    const audioElements = document.querySelectorAll('audio');
-    audioElements.forEach((audio) => {
-      audio.volume = newVolume / 100;
-    });
+  // Update volume on all audio elements
+  const applyVolume = useCallback((vol: number) => {
+    // Target audio elements within the page
+    const audioElements = document.getElementsByTagName('audio');
+    for (let i = 0; i < audioElements.length; i++) {
+      audioElements[i].volume = vol / 100;
+    }
   }, []);
 
-  // Mute/unmute a specific participant (locally - stops receiving their audio)
-  const toggleParticipantAudio = useCallback((participantId: string, currentlyReceiving: boolean) => {
-    if (daily) {
-      daily.updateParticipant(participantId, {
-        setSubscribedTracks: {
-          audio: !currentlyReceiving,
-          video: true,
-        },
-      });
-    }
-  }, [daily]);
+  const handleVolumeChange = useCallback((newVolume: number) => {
+    setVolume(newVolume);
+    setIsMutedAll(newVolume === 0);
+    applyVolume(newVolume);
+  }, [applyVolume]);
 
-  // Mute all participants locally
+  // Mute all by setting volume to 0
   const muteAllParticipants = useCallback(() => {
-    if (daily) {
-      remoteParticipantIds.forEach((id) => {
-        daily.updateParticipant(id, {
-          setSubscribedTracks: {
-            audio: false,
-            video: true,
-          },
-        });
-      });
-    }
-  }, [daily, remoteParticipantIds]);
+    applyVolume(0);
+    setIsMutedAll(true);
+  }, [applyVolume]);
 
-  // Unmute all participants locally
+  // Unmute all by restoring volume
   const unmuteAllParticipants = useCallback(() => {
-    if (daily) {
-      remoteParticipantIds.forEach((id) => {
-        daily.updateParticipant(id, {
-          setSubscribedTracks: {
-            audio: true,
-            video: true,
-          },
-        });
-      });
-    }
-  }, [daily, remoteParticipantIds]);
+    applyVolume(volume > 0 ? volume : 100);
+    setIsMutedAll(false);
+    if (volume === 0) setVolume(100);
+  }, [applyVolume, volume]);
 
   return (
     <div className="absolute top-4 right-4 z-20 bg-black/80 backdrop-blur-md rounded-xl p-4 min-w-[280px] text-white shadow-2xl">
@@ -282,7 +292,7 @@ function HostControlPanel({ onClose }: { onClose: () => void }) {
 
       {/* Master Volume */}
       <div className="mb-4">
-        <label className="text-xs text-white/70 mb-2 block">Master Volume</label>
+        <label className="text-xs text-white/70 mb-2 block">Master Volume {isMutedAll && '(Muted)'}</label>
         <div className="flex items-center gap-3">
           <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
@@ -291,11 +301,11 @@ function HostControlPanel({ onClose }: { onClose: () => void }) {
             type="range"
             min="0"
             max="100"
-            value={volume}
+            value={isMutedAll ? 0 : volume}
             onChange={(e) => handleVolumeChange(Number(e.target.value))}
             className="flex-1 h-2 bg-white/20 rounded-full appearance-none cursor-pointer accent-sage"
           />
-          <span className="text-xs w-8 text-right">{volume}%</span>
+          <span className="text-xs w-8 text-right">{isMutedAll ? 0 : volume}%</span>
         </div>
       </div>
 
@@ -303,25 +313,33 @@ function HostControlPanel({ onClose }: { onClose: () => void }) {
       <div className="flex gap-2 mb-4">
         <button
           onClick={muteAllParticipants}
-          className="flex-1 px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-medium transition-colors"
+          className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+            isMutedAll
+              ? 'bg-red-500/40 text-red-300'
+              : 'bg-red-500/20 hover:bg-red-500/30 text-red-400'
+          }`}
         >
-          Mute All
+          {isMutedAll ? 'Muted' : 'Mute All'}
         </button>
         <button
           onClick={unmuteAllParticipants}
-          className="flex-1 px-3 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg text-xs font-medium transition-colors"
+          className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+            !isMutedAll
+              ? 'bg-green-500/40 text-green-300'
+              : 'bg-green-500/20 hover:bg-green-500/30 text-green-400'
+          }`}
         >
-          Unmute All
+          {!isMutedAll ? 'Unmuted' : 'Unmute All'}
         </button>
       </div>
 
       {/* Participant List */}
       {remoteParticipantIds.length > 0 && (
         <div>
-          <label className="text-xs text-white/70 mb-2 block">Participants</label>
+          <label className="text-xs text-white/70 mb-2 block">Participants ({remoteParticipantIds.length})</label>
           <div className="space-y-2 max-h-32 overflow-y-auto">
             {remoteParticipantIds.map((id) => (
-              <ParticipantAudioControl key={id} participantId={id} onToggle={toggleParticipantAudio} />
+              <ParticipantInfo key={id} participantId={id} />
             ))}
           </div>
         </div>
@@ -334,19 +352,13 @@ function HostControlPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-// Individual participant audio control
-function ParticipantAudioControl({
-  participantId,
-  onToggle
-}: {
-  participantId: string;
-  onToggle: (id: string, receiving: boolean) => void;
-}) {
+// Simple participant info display
+function ParticipantInfo({ participantId }: { participantId: string }) {
   const daily = useDaily();
   const audioTrack = useAudioTrack(participantId);
   const participants = daily?.participants();
   const participant = participants?.[participantId];
-  const isReceivingAudio = audioTrack?.subscribed !== false;
+  const hasAudio = audioTrack?.state === 'playable';
 
   return (
     <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
@@ -358,14 +370,8 @@ function ParticipantAudioControl({
           {participant?.user_name || 'Participant'}
         </span>
       </div>
-      <button
-        onClick={() => onToggle(participantId, isReceivingAudio)}
-        className={`p-1.5 rounded-full transition-colors ${
-          isReceivingAudio ? 'bg-green-500/30 text-green-400' : 'bg-red-500/30 text-red-400'
-        }`}
-        title={isReceivingAudio ? 'Mute participant' : 'Unmute participant'}
-      >
-        {isReceivingAudio ? (
+      <div className={`p-1.5 rounded-full ${hasAudio ? 'bg-green-500/30 text-green-400' : 'bg-red-500/30 text-red-400'}`}>
+        {hasAudio ? (
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
           </svg>
@@ -375,7 +381,7 @@ function ParticipantAudioControl({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
           </svg>
         )}
-      </button>
+      </div>
     </div>
   );
 }
@@ -390,7 +396,6 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
 
   useDailyEvent('joined-meeting', () => {
     setJoined(true);
-    // Ensure audio and video are enabled after joining
     if (daily) {
       daily.setLocalAudio(true);
       daily.setLocalVideo(true);
@@ -403,12 +408,10 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
 
   useEffect(() => {
     if (daily && !joined) {
-      // First, request access to camera and microphone
       daily.startCamera({
         startVideoOff: false,
         startAudioOff: false,
       }).then(() => {
-        // Then join the meeting
         return daily.join({
           userName,
         });
@@ -441,7 +444,7 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
 
   return (
     <div className="relative w-full h-full bg-charcoal overflow-hidden">
-      {/* Audio for all participants - this enables receiving remote audio */}
+      {/* Audio for all participants */}
       <DailyAudio />
 
       {/* Host Control Panel */}
@@ -449,7 +452,7 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
         <HostControlPanel onClose={() => setShowSettings(false)} />
       )}
 
-      {/* Debug info for host - shows audio/video track states */}
+      {/* Debug info for host */}
       {isHost && (
         <div className="absolute top-4 left-4 z-20 bg-black/60 backdrop-blur-sm rounded-lg p-2 text-[10px] text-white/80 font-mono">
           <div>Audio: {localParticipant?.tracks?.audio?.state || 'none'}</div>
@@ -486,7 +489,7 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
         </div>
       )}
 
-      {/* Controls - Overlaid on video */}
+      {/* Controls */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
         <Controls
           onLeave={onLeave}
@@ -506,7 +509,6 @@ export function VideoRoom({ roomUrl, userName, onLeave, isHost = false }: VideoR
     // Destroy any existing call object first
     destroyCallObject();
 
-    // Small delay to ensure cleanup is complete
     const timer = setTimeout(() => {
       const co = getOrCreateCallObject(roomUrl);
       setCallObject(co);
