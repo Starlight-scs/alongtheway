@@ -171,29 +171,29 @@ export default function Home() {
           <Container size="wide">
             <div className="rounded-[2.5rem] bg-charcoal px-6 py-12 text-white md:px-12 md:py-16">
               <div className="max-w-4xl mx-auto text-center">
-                <span className="eyebrow border-white/20 bg-white/15 text-white">Walking Together</span>
-                <h2 className="mt-6 text-white">Why Referrals?</h2>
-                <p className="mt-6 text-lg leading-8 text-white md:text-xl">
+                <span className="eyebrow border-white/20 bg-white/15 text-white">Why Referrals?</span>
+                <h2 className="mt-4 text-white">Walking Together</h2>
+                <p className="mt-4 text-lg leading-8 md:text-xl" style={{ color: 'white' }}>
                   We believe the most important thing is to be in community. None of us can be everything for someone who is hurting — and we were never meant to be.
                 </p>
-                <p className="mt-5 text-base leading-7 text-white md:text-lg">
+                <p className="mt-4 text-base leading-7 md:text-lg" style={{ color: 'white' }}>
                   Along the way, we want and need each other to receive from people who carry the heart of the Father. When you refer someone, you are not handing them off — you are inviting more hands to hold them, more voices to encourage them, and more hearts to pray for them.
                 </p>
-                <div className="mt-10 grid gap-6 md:grid-cols-3 text-left">
-                  <div className="rounded-2xl bg-white/10 p-6">
-                    <div className="text-2xl mb-3">🤝</div>
-                    <h3 className="text-white text-lg">Community, Not Isolation</h3>
-                    <p className="mt-2 text-sm text-white">No one should walk through hard seasons alone. Referrals create connection.</p>
+                <div className="mt-10 grid gap-6 md:grid-cols-3">
+                  <div className="rounded-2xl bg-white/10 p-6 text-center">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sage text-white font-semibold mb-4">1</div>
+                    <h3 className="text-lg font-semibold" style={{ color: 'white' }}>Community, Not Isolation</h3>
+                    <p className="mt-3 text-sm" style={{ color: 'white' }}>No one should walk through hard seasons alone. Referrals create connection.</p>
                   </div>
-                  <div className="rounded-2xl bg-white/10 p-6">
-                    <div className="text-2xl mb-3">💛</div>
-                    <h3 className="text-white text-lg">Shared Burden</h3>
-                    <p className="mt-2 text-sm text-white">You don't have to carry someone alone. Let others help you love them well.</p>
+                  <div className="rounded-2xl bg-white/10 p-6 text-center">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sage text-white font-semibold mb-4">2</div>
+                    <h3 className="text-lg font-semibold" style={{ color: 'white' }}>Shared Burden</h3>
+                    <p className="mt-3 text-sm" style={{ color: 'white' }}>You don't have to carry someone alone. Let others help you love them well.</p>
                   </div>
-                  <div className="rounded-2xl bg-white/10 p-6">
-                    <div className="text-2xl mb-3">🙏</div>
-                    <h3 className="text-white text-lg">Heart of the Father</h3>
-                    <p className="mt-2 text-sm text-white">More people praying means more of God's love surrounding those who need it most.</p>
+                  <div className="rounded-2xl bg-white/10 p-6 text-center">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sage text-white font-semibold mb-4">3</div>
+                    <h3 className="text-lg font-semibold" style={{ color: 'white' }}>Heart of the Father</h3>
+                    <p className="mt-3 text-sm" style={{ color: 'white' }}>More people praying means more of God's love surrounding those who need it most.</p>
                   </div>
                 </div>
               </div>

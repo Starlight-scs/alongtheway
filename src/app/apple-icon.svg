@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
+  <!-- Background -->
+  <rect width="180" height="180" rx="40" fill="#F5F0EB"/>
+  <!-- Mug body -->
+  <path d="M45 65h80v75a20 20 0 01-20 20H65a20 20 0 01-20-20V65z" fill="#8B7355"/>
+  <!-- Mug handle -->
+  <path d="M125 80h10a20 20 0 010 40h-10" stroke="#8B7355" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <!-- Steam lines -->
+  <path d="M60 30c0 12 12 18 12 30M85 25c0 12 12 18 12 30M110 30c0 12 12 18 12 30" stroke="#A89080" stroke-width="6" stroke-linecap="round"/>
+  <!-- Highlight on mug -->
+  <path d="M55 75v55a10 10 0 0010 10h5" stroke="#A89080" stroke-width="6" stroke-linecap="round"/>
+</svg>
