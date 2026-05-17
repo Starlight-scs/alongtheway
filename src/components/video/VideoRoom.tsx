@@ -29,7 +29,12 @@ function getOrCreateCallObject(url: string): DailyCall {
   if (globalCallObject) {
     return globalCallObject;
   }
-  globalCallObject = DailyIframe.createCallObject({ url });
+  globalCallObject = DailyIframe.createCallObject({
+    url,
+    // Ensure audio and video are enabled by default
+    startVideoOff: false,
+    startAudioOff: false,
+  });
   return globalCallObject;
 }
 
@@ -81,22 +86,49 @@ function VideoTile({ participantId, isLocal }: { participantId: string; isLocal?
 function Controls({ onLeave, isHost, onToggleSettings }: { onLeave?: () => void; isHost?: boolean; onToggleSettings?: () => void }) {
   const daily = useDaily();
   const localParticipant = useLocalParticipant();
+  const [localAudioEnabled, setLocalAudioEnabled] = useState(true);
+  const [localVideoEnabled, setLocalVideoEnabled] = useState(true);
 
-  // Get actual track states from the participant
-  const isMuted = !localParticipant?.tracks?.audio?.state || localParticipant?.tracks?.audio?.state === 'off';
-  const isVideoOff = !localParticipant?.tracks?.video?.state || localParticipant?.tracks?.video?.state === 'off';
+  // Get actual track states from the participant - check if track is actively sending
+  const audioState = localParticipant?.tracks?.audio?.state;
+  const videoState = localParticipant?.tracks?.video?.state;
+
+  // Audio is muted if state is 'off' or 'blocked' or undefined
+  const isMuted = !audioState || audioState === 'off' || audioState === 'blocked';
+  const isVideoOff = !videoState || videoState === 'off' || videoState === 'blocked';
+
+  // Sync local state with actual track state
+  useEffect(() => {
+    if (audioState === 'playable' || audioState === 'sendable') {
+      setLocalAudioEnabled(true);
+    } else if (audioState === 'off') {
+      setLocalAudioEnabled(false);
+    }
+  }, [audioState]);
+
+  useEffect(() => {
+    if (videoState === 'playable' || videoState === 'sendable') {
+      setLocalVideoEnabled(true);
+    } else if (videoState === 'off') {
+      setLocalVideoEnabled(false);
+    }
+  }, [videoState]);
 
   const toggleAudio = useCallback(() => {
     if (daily) {
-      daily.setLocalAudio(isMuted);
+      const newState = !localAudioEnabled;
+      daily.setLocalAudio(newState);
+      setLocalAudioEnabled(newState);
     }
-  }, [daily, isMuted]);
+  }, [daily, localAudioEnabled]);
 
   const toggleVideo = useCallback(() => {
     if (daily) {
-      daily.setLocalVideo(isVideoOff);
+      const newState = !localVideoEnabled;
+      daily.setLocalVideo(newState);
+      setLocalVideoEnabled(newState);
     }
-  }, [daily, isVideoOff]);
+  }, [daily, localVideoEnabled]);
 
   const handleLeave = useCallback(() => {
     if (daily) {
@@ -106,16 +138,20 @@ function Controls({ onLeave, isHost, onToggleSettings }: { onLeave?: () => void;
     onLeave?.();
   }, [daily, onLeave]);
 
+  // Use local state for immediate visual feedback, fall back to track state
+  const showMuted = !localAudioEnabled || isMuted;
+  const showVideoOff = !localVideoEnabled || isVideoOff;
+
   return (
     <div className="flex items-center justify-center gap-3 p-3 bg-black/40 backdrop-blur-sm rounded-full">
       <button
         onClick={toggleAudio}
         className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${
-          isMuted ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'
+          showMuted ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'
         }`}
-        title={isMuted ? 'Unmute' : 'Mute'}
+        title={showMuted ? 'Unmute' : 'Mute'}
       >
-        {isMuted ? (
+        {showMuted ? (
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
@@ -130,11 +166,11 @@ function Controls({ onLeave, isHost, onToggleSettings }: { onLeave?: () => void;
       <button
         onClick={toggleVideo}
         className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${
-          isVideoOff ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'
+          showVideoOff ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'
         }`}
-        title={isVideoOff ? 'Turn on camera' : 'Turn off camera'}
+        title={showVideoOff ? 'Turn on camera' : 'Turn off camera'}
       >
-        {isVideoOff ? (
+        {showVideoOff ? (
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
@@ -354,6 +390,11 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
 
   useDailyEvent('joined-meeting', () => {
     setJoined(true);
+    // Ensure audio and video are enabled after joining
+    if (daily) {
+      daily.setLocalAudio(true);
+      daily.setLocalVideo(true);
+    }
   });
 
   useDailyEvent('error', (event) => {
@@ -362,11 +403,17 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
 
   useEffect(() => {
     if (daily && !joined) {
-      daily.join({
-        userName,
+      // First, request access to camera and microphone
+      daily.startCamera({
         startVideoOff: false,
         startAudioOff: false,
+      }).then(() => {
+        // Then join the meeting
+        return daily.join({
+          userName,
+        });
       }).catch((err) => {
+        console.error('Failed to join meeting:', err);
         setError(err.message || 'Failed to join meeting');
       });
     }
@@ -400,6 +447,15 @@ function CallUI({ userName, onLeave, isHost }: { userName: string; onLeave?: () 
       {/* Host Control Panel */}
       {isHost && showSettings && (
         <HostControlPanel onClose={() => setShowSettings(false)} />
+      )}
+
+      {/* Debug info for host - shows audio/video track states */}
+      {isHost && (
+        <div className="absolute top-4 left-4 z-20 bg-black/60 backdrop-blur-sm rounded-lg p-2 text-[10px] text-white/80 font-mono">
+          <div>Audio: {localParticipant?.tracks?.audio?.state || 'none'}</div>
+          <div>Video: {localParticipant?.tracks?.video?.state || 'none'}</div>
+          <div>Participants: {remoteParticipantIds.length}</div>
+        </div>
       )}
 
       {/* Main Video Area */}
