@@ -149,7 +149,7 @@ export default function AdminRequestsPage() {
 
                   {request.access_codes?.[0] && (
                     <div>
-                      <h4 className="text-sm font-medium text-charcoal">Access Code</h4>
+                      <h4 className="text-sm font-medium text-charcoal">Meeting Room Code</h4>
                       <p className="text-sm font-mono text-charcoal">
                         {request.access_codes[0].code}
                       </p>

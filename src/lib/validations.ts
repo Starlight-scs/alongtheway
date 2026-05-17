@@ -17,7 +17,7 @@ export const intakeSchema = z.object({
 export type IntakeFormData = z.infer<typeof intakeSchema>;
 
 export const verifyCodeSchema = z.object({
-  code: z.string().min(1, 'Please enter your access code'),
+  code: z.string().min(1, 'Please enter your meeting room code'),
 });
 
 export type VerifyCodeData = z.infer<typeof verifyCodeSchema>;

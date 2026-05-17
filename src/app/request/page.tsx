@@ -114,7 +114,7 @@ export default function RequestPage() {
               <Card className="mb-8 text-left">
                 <h2 className="heading-normal text-2xl text-charcoal">What Happens Next</h2>
                 <p className="mt-4 leading-7 text-warm-gray">
-                  Check your email — we have sent you an access code and booking link.
+                  Check your email — we have sent you a meeting room code and booking link.
                   Please share it with {personName} personally, so they can book a time that works for them.
                 </p>
                 <p className="mt-4 leading-7 text-warm-gray">
@@ -155,7 +155,7 @@ export default function RequestPage() {
                 <div className="mt-10 grid gap-4 md:grid-cols-3 max-w-4xl mx-auto">
                   {[
                     { step: '1', title: 'Share', desc: 'Tell us about them and what they\'re facing' },
-                    { step: '2', title: 'Receive', desc: 'Get an access code to share with them' },
+                    { step: '2', title: 'Receive', desc: 'Get a meeting room code to share with them' },
                     { step: '3', title: 'Connect', desc: 'They book a private session with Mama & Papa' },
                   ].map((item) => (
                     <div key={item.step} className="rounded-2xl bg-white/15 p-5 text-center">
@@ -337,7 +337,7 @@ export default function RequestPage() {
                     Send Referral
                   </Button>
                   <p className="mt-4 text-sm text-warm-gray">
-                    We will send you an access code and next steps by email.
+                    We will send you a meeting room code and next steps by email.
                   </p>
                 </div>
               </div>

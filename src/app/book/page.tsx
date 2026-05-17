@@ -40,7 +40,7 @@ export default function BookPage() {
       const result = await response.json();
 
       if (!response.ok || !result.valid) {
-        throw new Error(result.message || 'Invalid access code');
+        throw new Error(result.message || 'Invalid meeting room code');
       }
 
       setAccessCode(data.code.toUpperCase().trim());
@@ -85,13 +85,13 @@ export default function BookPage() {
                   Ready to book your session?
                 </h1>
                 <p className="text-lg text-warm-gray leading-relaxed">
-                  Enter the access code you received to book a time with Mama and Papa.
+                  Enter the meeting room code you received to book a time with Mama and Papa.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <Input
-                  label="Access code"
+                  label="Meeting room code"
                   placeholder="Enter your code"
                   error={errors.code?.message || (error ? error : undefined)}
                   className="text-center text-xl tracking-wider uppercase"

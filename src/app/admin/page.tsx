@@ -73,7 +73,7 @@ export default function AdminDashboard() {
             </li>
             <li>
               <a href="/admin/codes" className="text-sage hover:underline">
-                Manage access codes →
+                Manage meeting rooms →
               </a>
             </li>
             <li>

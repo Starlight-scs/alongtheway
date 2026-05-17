@@ -57,7 +57,7 @@ export default function AdminRoomPage() {
   if (joined && roomUrl) {
     return (
       <div className="h-screen bg-charcoal flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl aspect-video rounded-xl overflow-hidden shadow-2xl">
+        <div className="w-full h-[75vh] max-w-[133vh] rounded-xl overflow-hidden shadow-2xl">
           <VideoRoom roomUrl={roomUrl} userName="Mama & Papa" onLeave={handleLeave} isHost={true} />
         </div>
       </div>

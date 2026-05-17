@@ -89,7 +89,7 @@ export default function AdminCodesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-charcoal">Access Codes</h1>
+        <h1 className="text-2xl font-semibold text-charcoal">Meeting Rooms</h1>
 
         <div className="flex gap-2">
           {(['all', 'active', 'expired', 'revoked'] as const).map((f) => (

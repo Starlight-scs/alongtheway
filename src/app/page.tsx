@@ -81,7 +81,7 @@ export default function Home() {
                     </Link>
                     <Link href="/book">
                       <Button variant="secondary" className="border-white/30 bg-white/20 text-white hover:bg-white/30">
-                        Book with an Access Code
+                        Enter Meeting Room
                       </Button>
                     </Link>
                   </div>
@@ -141,7 +141,7 @@ export default function Home() {
                 <div className="mt-8 grid gap-7 md:grid-cols-3">
                   {[
                     ['1', 'Refer with care', 'A friend, family member, or loved one shares who needs prayer and what they are walking through.'],
-                    ['2', 'We pray first', 'Mama and Papa begin praying immediately and send an access code for scheduling.'],
+                    ['2', 'We pray first', 'Mama and Papa begin praying immediately and send a meeting room code for scheduling.'],
                     ['3', 'Connect live', 'They choose a time for a private video session centered on listening, encouragement, and prayer.'],
                   ].map(([step, title, body]) => (
                     <div key={step} className="rounded-[1.5rem] bg-oat p-6">
@@ -209,7 +209,7 @@ export default function Home() {
                   <span className="eyebrow">Book or refer</span>
                   <h2 className="mt-5 max-w-2xl">Take the next gentle step for someone you love, or for yourself.</h2>
                   <p className="mt-5 max-w-2xl text-lg leading-8">
-                    If you know someone who needs prayer and a listening ear, send a referral. If you already have an access code, book a time that feels right.
+                    If you know someone who needs prayer and a listening ear, send a referral. If you already have a meeting room code, book a time that feels right.
                   </p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
@@ -224,10 +224,10 @@ export default function Home() {
                   </div>
                   <div className="rounded-[1.75rem] bg-oat p-6">
                     <h3 className="text-2xl text-charcoal">Book your session</h3>
-                    <p className="mt-3 text-base leading-7">Already received a private access code? Use it to choose a time and join the conversation.</p>
+                    <p className="mt-3 text-base leading-7">Already have a meeting room code? Use it to choose a time and join the conversation.</p>
                     <div className="mt-6">
                       <Link href="/book">
-                        <Button variant="secondary" className="w-full">Enter Access Code</Button>
+                        <Button variant="secondary" className="w-full">Enter Meeting Room</Button>
                       </Link>
                     </div>
                   </div>
