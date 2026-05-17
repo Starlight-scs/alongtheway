@@ -159,11 +159,11 @@ export default function RequestPage() {
                     { step: '3', title: 'Connect', desc: 'They book a private session with Mama & Papa' },
                   ].map((item) => (
                     <div key={item.step} className="rounded-2xl bg-white/15 p-5 text-center">
-                      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-white text-charcoal font-semibold mb-3">
+                      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sage text-white font-semibold mb-3">
                         {item.step}
                       </div>
-                      <h3 className="text-white text-lg mb-1">{item.title}</h3>
-                      <p className="text-white text-sm">{item.desc}</p>
+                      <h3 className="text-cream text-lg mb-1">{item.title}</h3>
+                      <p className="text-sm" style={{ color: 'white' }}>{item.desc}</p>
                     </div>
                   ))}
                 </div>
