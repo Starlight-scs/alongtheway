@@ -145,8 +145,8 @@ export default function RequestPage() {
               <div className="texture-overlay absolute inset-0 bg-[linear-gradient(120deg,rgba(26,20,16,0.75),rgba(45,36,29,0.45)_45%,rgba(26,20,16,0.76))]" />
               <div className="relative px-6 py-12 md:px-12 md:py-16 lg:px-16 lg:py-20">
                 <div className="max-w-3xl mx-auto text-center">
-                  <span className="eyebrow border-white/20 bg-white/15 text-white">Referral</span>
-                  <h1 className="mt-6 text-white">Refer Someone</h1>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-white">Referral</span>
+                  <h1 className="mt-6 text-white drop-shadow-sm">Refer Someone</h1>
                   <p className="mt-6 text-lg leading-8 text-white md:text-xl">
                     Tell us who needs prayer. We will begin praying as soon as your request comes in.
                   </p>
@@ -158,12 +158,12 @@ export default function RequestPage() {
                     { step: '2', title: 'Receive', desc: 'Get an access code to share with them' },
                     { step: '3', title: 'Connect', desc: 'They book a private session with Mama & Papa' },
                   ].map((item) => (
-                    <div key={item.step} className="rounded-2xl bg-white/10 p-5 text-center">
-                      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sage text-white font-semibold mb-3">
+                    <div key={item.step} className="rounded-2xl bg-white/15 p-5 text-center">
+                      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-white text-charcoal font-semibold mb-3">
                         {item.step}
                       </div>
                       <h3 className="text-white text-lg mb-1">{item.title}</h3>
-                      <p className="text-white/80 text-sm">{item.desc}</p>
+                      <p className="text-white text-sm">{item.desc}</p>
                     </div>
                   ))}
                 </div>
