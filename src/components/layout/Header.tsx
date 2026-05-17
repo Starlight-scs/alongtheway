@@ -6,8 +6,8 @@ export function Header() {
     <header className="sticky top-0 z-50 py-4">
       <Container size="wide">
         <div className="glass-panel flex items-center justify-between rounded-full px-5 py-3">
-          <Link href="/" className="text-lg md:text-xl font-semibold text-charcoal hover:text-sage">
-            Mama & Papa
+          <Link href="/" className="text-lg md:text-xl font-extrabold text-charcoal hover:text-sage">
+            ALONG THE WAY
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-warm-gray">
             <Link href="/#encouragement" className="hover:text-charcoal">Encouragement</Link>

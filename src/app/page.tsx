@@ -63,17 +63,19 @@ export default function Home() {
                 <source src="/hero-background.mp4" type="video/mp4" />
               </video>
               <div className="texture-overlay absolute inset-0 bg-[linear-gradient(120deg,rgba(26,20,16,0.75),rgba(45,36,29,0.45)_45%,rgba(26,20,16,0.76))]" />
-              <div className="relative px-6 py-20 md:px-12 md:py-28 lg:px-16 lg:py-32">
-                <div className="max-w-4xl">
+              <div className="relative px-6 pt-8 pb-20 md:px-12 md:pt-12 md:pb-28 lg:px-16 lg:pt-16 lg:pb-32">
+                <div className="mb-6">
                   <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-white">A quiet, human-centered invitation</span>
-                  <h1 className="mt-6 max-w-3xl text-white drop-shadow-sm">
+                </div>
+                <div className="max-w-4xl">
+                  <h1 className="max-w-3xl drop-shadow-sm" style={{ color: 'white' }}>
                     Along the way
                   </h1>
                   <p className="mt-6 max-w-3xl text-lg leading-8 text-white md:text-2xl md:leading-10">
                     Sometimes you need people to walk with you, talk with you, and pray with you along the way.
                   </p>
                   <p className="mt-5 max-w-2xl text-base leading-7 text-white md:text-lg">
-                    Mama and Papa offer warm, faith-filled sessions for people who need to be heard, encouraged, and covered in prayer through difficult seasons.
+                    ALONG THE WAY offers warm, faith-filled sessions with Mama and Papa for people who need to be heard, encouraged, and covered in prayer through difficult seasons.
                   </p>
                   <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                     <Link href="/request">
