@@ -1,28 +1,10 @@
 import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
-import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
 import { createDailyRoom, deleteDailyRoom } from '@/lib/daily';
 
 export async function POST(request: Request) {
   try {
-    const headersList = await headers();
-    const signature = headersList.get('x-cal-signature');
     const body = await request.text();
-
-    // Verify webhook signature (if secret is configured)
-    if (process.env.CAL_WEBHOOK_SECRET) {
-      const expectedSignature = crypto
-        .createHmac('sha256', process.env.CAL_WEBHOOK_SECRET)
-        .update(body)
-        .digest('hex');
-
-      if (signature !== expectedSignature) {
-        console.error('Invalid Cal.com webhook signature');
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-      }
-    }
-
     const event = JSON.parse(body);
     const { triggerEvent, payload } = event;
 
