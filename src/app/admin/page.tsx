@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
@@ -7,7 +8,8 @@ import { Card } from '@/components/ui/Card';
 interface Stats {
   totalRequests: number;
   activeCodes: number;
-  upcomingSessions: number;
+  activeStudyRooms: number;
+  activeRoomSessions: number;
 }
 
 export default function AdminDashboard() {
@@ -47,7 +49,7 @@ export default function AdminDashboard() {
     <div>
       <h1 className="mb-6 font-sans text-xl font-medium tracking-normal text-charcoal">Overview</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
         <Card className="bg-white">
           <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-warm-gray">Requests</p>
           <p className="text-2xl font-semibold text-charcoal">{stats?.totalRequests || 0}</p>
@@ -57,8 +59,12 @@ export default function AdminDashboard() {
           <p className="text-2xl font-semibold text-charcoal">{stats?.activeCodes || 0}</p>
         </Card>
         <Card className="bg-white">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-warm-gray">Sessions</p>
-          <p className="text-2xl font-semibold text-charcoal">{stats?.upcomingSessions || 0}</p>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-warm-gray">Study Rooms</p>
+          <p className="text-2xl font-semibold text-charcoal">{stats?.activeStudyRooms || 0}</p>
+        </Card>
+        <Card className="bg-white">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-warm-gray">Live Sessions</p>
+          <p className="text-2xl font-semibold text-charcoal">{stats?.activeRoomSessions || 0}</p>
         </Card>
       </div>
 
@@ -67,19 +73,24 @@ export default function AdminDashboard() {
           <h2 className="mb-4 font-sans text-base font-medium tracking-normal text-charcoal">Quick Links</h2>
           <ul className="space-y-2">
             <li>
-              <a href="/admin/requests" className="text-sage hover:underline">
+              <Link href="/admin/rooms" className="text-sage hover:underline">
+                Create and host study rooms →
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/requests" className="text-sage hover:underline">
                 View all requests →
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/admin/codes" className="text-sage hover:underline">
-                Manage meeting rooms →
-              </a>
+              <Link href="/admin/codes" className="text-sage hover:underline">
+                Manage referral access codes →
+              </Link>
             </li>
             <li>
-              <a href="/admin/bookings" className="text-sage hover:underline">
+              <Link href="/admin/bookings" className="text-sage hover:underline">
                 View bookings →
-              </a>
+              </Link>
             </li>
           </ul>
         </Card>

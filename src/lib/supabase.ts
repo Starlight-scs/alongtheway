@@ -79,3 +79,39 @@ export interface Admin {
   email: string;
   created_at: string;
 }
+
+export interface StudyRoom {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  title: string;
+  description: string | null;
+  slug: string;
+  access_code: string;
+  status: 'active' | 'archived';
+  is_recurring: boolean;
+  starts_at: string | null;
+  ends_at: string | null;
+  host_admin_id: string | null;
+}
+
+export interface RoomSession {
+  id: string;
+  room_id: string;
+  created_at: string;
+  started_at: string;
+  ended_at: string | null;
+  daily_room_name: string;
+  daily_room_url: string;
+  status: 'active' | 'ended';
+}
+
+export interface RoomInvite {
+  id: string;
+  room_id: string;
+  created_at: string;
+  invite_token: string;
+  expires_at: string | null;
+  max_uses: number | null;
+  used_count: number;
+}

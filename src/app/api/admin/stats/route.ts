@@ -10,16 +10,18 @@ export async function GET() {
 
   try {
     // Get counts
-    const [requestsResult, activeCodesResult, bookingsResult] = await Promise.all([
+    const [requestsResult, activeCodesResult, studyRoomsResult, roomSessionsResult] = await Promise.all([
       supabaseAdmin.from('requests').select('id', { count: 'exact', head: true }),
       supabaseAdmin.from('access_codes').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-      supabaseAdmin.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'scheduled'),
+      supabaseAdmin.from('study_rooms').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+      supabaseAdmin.from('room_sessions').select('id', { count: 'exact', head: true }).eq('status', 'active'),
     ]);
 
     return NextResponse.json({
       totalRequests: requestsResult.count || 0,
       activeCodes: activeCodesResult.count || 0,
-      upcomingSessions: bookingsResult.count || 0,
+      activeStudyRooms: studyRoomsResult.count || 0,
+      activeRoomSessions: roomSessionsResult.count || 0,
     });
   } catch (error) {
     console.error('Error fetching stats:', error);
